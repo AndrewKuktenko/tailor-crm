@@ -16,7 +16,6 @@ export default () => () => (next) => async (action) => {
     return next(action);
   }
 
-
   try {
     const res = await axios({
       url: endpoint,

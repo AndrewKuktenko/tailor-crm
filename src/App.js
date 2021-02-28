@@ -1,4 +1,3 @@
-import './App.css';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { get } from 'lodash';
@@ -7,8 +6,9 @@ import {
   Button,
   Select,
 } from 'antd';
-import { importFilePreSigned, createImport } from './data/actions/import';
+import { importFilePreSigned, createImport, clearImport } from './data/actions/import';
 import { importPreprocessSelector, baseImportSelector } from './data/selectors/import';
+import './App.css';
 
 const { Dragger } = Upload;
 
@@ -30,8 +30,9 @@ function App() {
       type: get(importData, 'settings.type'),
     };
 
-
-    dispatch(createImport(data, () => {}, () => {}));
+    dispatch(createImport(data, () => {
+      dispatch(clearImport());
+    }, () => {}));
   }, [dispatch, importData]);
 
   const renderUploadState = () => {
@@ -39,11 +40,11 @@ function App() {
     if (preprocessResult) {
       return (
         <>
-          <Button onClick={addImport}>{`Start Import ${get(preprocessResult, 'originalName')}`}</Button>
+          <Button onClick={addImport}>{`Upload file ${get(preprocessResult, 'originalName')}`}</Button>
         </>
       );
     }
-    return 'Load your file';
+    return 'Select your file';
   };
 
   const uploadRequestHandler = useCallback((file) => {
@@ -57,10 +58,10 @@ function App() {
 
   return (
     <div className="App">
-      <header className="App-header" style={{ display: "flex", flexDirection: 'column', justifyContent: 'center' }}>
-        <Select style={{ margin: 10 }} value={source} defaultValue="patient" onChange={setSource}>
-          <Option value="patient">Patient</Option>
-          <Option value="hospital">Hospital</Option>
+      <header className="App-header" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <Select disabled={get(importData, 'preprocess.fileUrl')} style={{ margin: 10 }} value={source} defaultValue="patient" onChange={setSource}>
+          <Select.Option value="patient">Patient</Select.Option>
+          <Select.Option value="hospital">Hospital</Select.Option>
         </Select>
         <Dragger
           style={{ padding: 10 }}
@@ -69,6 +70,7 @@ function App() {
           multiple={false}
           customRequest={uploadRequestHandler}
           disabled={loading || !!preprocessResult}
+          showUploadList={false}
         >
           { renderUploadState() }
         </Dragger>

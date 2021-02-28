@@ -7,7 +7,7 @@ import rootReducer from './reducers/rootReducer';
 import createCustomRequestMiddleware from './middlewares/customRequest';
 
 const apiMiddleware = createApiMiddleware();
-const customRequest = createCustomRequestMiddleware(); 
+const customRequest = createCustomRequestMiddleware();
 
 export default function configureStore(initialState = {}) {
   return createStore(
